@@ -1,0 +1,39 @@
+function Foo() {
+            getName = function() {
+                console.log(1);
+            };
+            return this;
+        }
+        Foo.getName = function() {
+            console.log(2);
+        };
+        Foo.prototype.getName = function() {
+            console.log(3);
+        };
+        var getName = function() {
+            console.log(4);
+        };
+
+        function getName() {
+            console.log(5);
+        };
+        Foo.getName();
+        Foo().getName();
+        getName();
+        new Foo.getName();
+        new Foo().getName();
+        new new Foo().getName();
+        //解析
+        //1,  Foo.getName();     调用Foo的静态方法，所以打印2;
+        //2,  Foo().getName();    Foo是普通函数调用，返回的this是window，后面调用window.getName()
+        //    而window下的getName在Foo()中调用getName被重新赋值，所以打印1;
+        //3,  getName();    在执行过Foo().getName()的基础上,所以getName=function(){console.log(1)},所以打印1
+        //   【如果getName()放在Foo().getName()上执行打印结果为4】;
+        //4,  new Foo.getName();    构造器私有属性的getName(),所以打印2;
+        //5,  new Foo().getName();    原型上的getName(),所以打印3;
+        //6,  new new Foo().getName()    主要考虑new和.()的运算的优先级问题,
+        //    new Foo()的优先级高于.  (.的优先级高于new Foo),
+        //    第一步new Foo()得到一个对象,
+        //    第二步new Foo().getName 得到一个函数function 因为是实例对象,所以是原型上的方法
+        //    第三步new 第二步得到的函数 function  new function所以打印3;
+        //答案为2,1,1,2,3,3

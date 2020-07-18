@@ -1,0 +1,23 @@
+var a = 10;
+        var obj = {
+            a: 100,
+            pro:{
+                getPro:()=>{
+                    console.log(this.a);
+                },
+            },
+        };
+        obj.pro.getPro();
+        //  解析：全局变量a的值是10，obj对象里面有两个key分别是a和pro，a的值是100，pro则是一个对象
+        //  pro里面的getPro是一个箭头函数，箭头函数里面执行打印this.a，箭头函数不会创建自己的this
+        //  它只会从自己的作用域链的上一层继承this，所以这里的this指向window，输出的结果是10
+        var a = { n:1 };
+        var b = a;
+        a.x = a = { n:2 };
+        console.log(a.x);
+        console.log(b.x);
+        //  解析：a是一个对象，里面只有一个key为n，n的值是1。b = a ，那么b指向的对象跟a指向的对象是同
+        //  一个对象。a.x = a = { n：2}，这里面 . 的运算优先级要大于 = 的运算优先级，所以a.x先进行运
+        //  算，a对象当中多了一个key为x，接下来运算 = ，赋值运算是从右到左进行的，所以会先给a对象赋值
+        //  a对象变成了{n：2}，a.x=a就是a.x={n：2}。运算完毕以后，再看a和b这两个对象，a现在是{n:2}，
+        //  b现在是{ n:1，x:{n:2}}，所以输出的结果是undefined  {n:2}

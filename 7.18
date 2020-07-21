@@ -1,0 +1,36 @@
+<script>
+        console.log("AAAA");
+        setTomeout(()=>console.log("BBBB"),1000);
+        const start = new Date();
+        while(new Date() - start<3000){}
+        console.log("CCCC");
+        setTomeout(()=>console.log("DDDD"),0);
+        new promise((resove, reject)=>{
+            console.log("EEEE");
+            foo.bar(100);
+        })
+        .then(()=>console.log("FFFF"))
+        .then(()=>console.log("GGGG"))
+        .catch(()=>console.log("HHHH"));
+        console.log("IIII");
+        //  解析：考察的是js异步执行，宏任务，微任务；
+        //  一开始代码执行，输出AAAA；第二行代码开启一个计时器T1，这是一个异步任务而且是宏任务
+        //  需要等到1秒之后提交；
+        //  第四行是个while语句，需要等待3秒之后才能执行下面的代码，3秒之后上一个计时器T1的提交
+        //  时间已经过去，但是线程上的的任务还没有执行结束，所以无法打印结果，所以它排在宏任务的
+        //  最前面；
+        //  第五行有输出CCCC；
+        //  第六行又开启一个计时器T2，他提交的时间是0秒，但是之前的T1任务还没有执行，还在等待，所以
+        //  T2排在T1的后面（T2排在T1的后面的原因是while造成的），都还需要等待，因为线程上的任务还没
+        //  执行完毕；
+        //  第七行new promise将执行promise函数，他的事一个回调函数，这个回调函数的代码时同步的，他的
+        //  异步核心在于resolve和reject，同时这个异步任务的任务队列属于微任务，是优先于宏任务的，所以
+        //  先输出同步代码EEEE，第九行的代码是个不存在的对象，这个错误要抛给reject这个状态，也即是catch
+        //  去处理，但是他是异步的而且是微任务，只有等到线程上的任务执行完毕，立马执行它，不管宏任务（
+        //  计时器、ajax等）等待多久了；
+        //  第十四行，这是线程的最后一个任务，输出IIII；
+        //  先找出线程上的同步代码，将结果一次排列出来：AAAA CCCC EEEE IIII；
+        //  然后找出异步任务中的微任务，将结果输出：HHHH；
+        //  左后找出异步任务中的宏任务，T1排在T2前面，输出顺序为：BBBB DDDD；
+        //  综上：AAAA CCCC EEEE IIII HHHH BBBB DDDD；
+    </script>
